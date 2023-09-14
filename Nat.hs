@@ -44,5 +44,17 @@ max O m = m
 max m O = m
 max (S m) (S n) = S(max m n)
 
--- div :: Nat -> Nat -> Nat
+-- div :: Nat -> Nat -> (Nat -> Nat)
+-- euclidean division (retorna (quociente,resto))
 
+-- quot :: Nat -> Nat -> Nat
+-- quociente
+
+-- rem :: Nat -> Nat -> Nat
+-- resto
+
+-- gcd :: Nat -> Nat -> Nat
+-- mdc
+
+-- lcm :: Nat -> Nat -> Nat
+-- mmc
