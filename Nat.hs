@@ -1,13 +1,13 @@
 module Nat where
 import Prelude 
-  hiding ((+), (*), (^), min, max, pred)
+  hiding ((+), (*), (^), quot, min, div, max, pred, rem)
 
 data Nat = O | S Nat
   deriving (Eq , Show)
 
 (+) :: Nat -> Nat -> Nat
 (+) m O = m
-(+) m (S n) = S(m + n)
+(+) m (S n) = S (m + n)
   
 (*) :: Nat -> Nat -> Nat
 (*) m O = O
@@ -19,7 +19,7 @@ data Nat = O | S Nat
 
 double :: Nat -> Nat
 double O = O
-double (S n) = S(S(double n))
+double (S n) = S (S (double n))
 
 pred :: Nat -> Nat
 pred O = O
@@ -37,21 +37,33 @@ fib (S (S m)) = fib (S m) + fib m
 min :: Nat -> Nat -> Nat
 min O m = O
 min m O = O
-min (S m) (S n) = S(min m n)
+min (S m) (S n) = S (min m n)
 
 max :: Nat -> Nat -> Nat
 max O m = m
 max m O = m
-max (S m) (S n) = S(max m n)
+max (S m) (S n) = S (max m n)
 
--- div :: Nat -> Nat -> (Nat -> Nat)
--- euclidean division (retorna (quociente,resto))
+quot :: Nat -> Nat -> Nat
+quot m n = quot' m n n
+  where
+    quot' :: Nat -> Nat -> Nat -> Nat
+    quot' O O k = S O
+    quot' (S m) (S n) k = quot' m n k
+    quot' m O k = S (quot' m k k)
+    quot' O m k = O
 
--- quot :: Nat -> Nat -> Nat
--- quociente
+rem :: Nat -> Nat -> Nat
+rem O n = O
+rem (S m) O = S (rem m O)
+rem m n = rem' m (n * (quot m n))
+  where
+    rem' :: Nat -> Nat -> Nat
+    rem' (S m) (S n) = rem' m n
+    rem' m O = m
 
--- rem :: Nat -> Nat -> Nat
--- resto
+div :: Nat -> Nat -> (Nat, Nat)
+div m n = (quot m n, rem m n)
 
 -- gcd :: Nat -> Nat -> Nat
 -- mdc
