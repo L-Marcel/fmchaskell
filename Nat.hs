@@ -7,18 +7,18 @@ data Nat = O | S Nat
 
 -- adição
 (+) :: Nat -> Nat -> Nat
-(+) m O = m
-(+) m (S n) = S (m + n)
+m + O = m
+m + (S n) = S (m + n)
 
 -- multiplicação
 (*) :: Nat -> Nat -> Nat
-(*) m O = O
-(*) m (S n) = m + (m * n)
+m * O = O
+m * (S n) = m + (m * n)
 
 -- exponenciação
 (^) :: Nat -> Nat -> Nat
-(^) m O = (S O)
-(^) m (S n) = m * (m ^ n)
+m ^ O = (S O)
+m ^ (S n) = m * (m ^ n)
 
 -- dobro
 double :: Nat -> Nat
