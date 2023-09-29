@@ -9,7 +9,7 @@
 module Nat where
 
 import Prelude
-  hiding ((==), drop, take, enumFromTo, not, reverse, (++), product, sum, elem, length, (+), (*), (^), quot, min, gcd, lcm, div, max, pred, rem)
+  hiding (minimum, (==), drop, take, enumFromTo, not, reverse, (++), product, sum, elem, length, (+), (*), (^), quot, min, gcd, lcm, div, max, pred, rem)
 
 data Nat = O | S Nat
   deriving (Eq, Show)
@@ -144,9 +144,7 @@ length (n : ns) = S(length ns)
 
 elem :: Nat -> ListNat -> Bool
 elem _ [] = False
-elem m (n : ns) = if n == m
-                    then True
-                    else elem m ns
+elem m (n : ns) = n == m || elem m ns
 
 sum :: ListNat -> Nat
 sum [] = O
@@ -204,11 +202,12 @@ expNat m [] = []
 expNat m (n : ns) = (n ^ m) : (expNat m ns)
 
 enumFromTo :: Nat -> Nat -> ListNat
-enumFromTo n m = if n == m
-                  then m : []
-                  else if gt n m
-                    then m : (enumFromTo n (S m))
-                    else n : (enumFromTo (S n) m)
+enumFromTo n m = 
+  if n == m
+    then m : []
+    else if gt n m
+      then m : (enumFromTo n (S m))
+      else n : (enumFromTo (S n) m)
 
 enumTo :: Nat -> ListNat
 enumTo = enumFromTo O
@@ -226,9 +225,47 @@ elemIndices m n = elemIndices' m n O
   where 
     elemIndices' :: Nat -> ListNat -> Nat -> ListNat
     elemIndices' _ [] _ = []
-    elemIndices' m (n : ns) i = if m == n
-      then i : elemIndices' m ns (S i)
-      else elemIndices' m ns (S i)
+    elemIndices' m (n : ns) i = 
+      if m == n
+        then i : elemIndices' m ns (S i)
+        else elemIndices' m ns (S i)
+
+pwAdd :: ListNat -> ListNat -> ListNat
+pwAdd (n : ns) (m : ms) = (n + m) : pwAdd ns ms
+pwAdd _ ms = ms
+
+pwMul :: ListNat -> ListNat -> ListNat
+pwMul (n : ns) (m : ms) = (n * m) : pwMul ns ms
+pwMul _ ms = ms
+
+isSorted :: ListNat -> Bool
+isSorted (n : (m : ms)) = (S n) == m && isSorted (m : ms)
+isSorted _ = True
+
+filterEven :: ListNat -> ListNat
+filterEven [] = []
+filterEven (n : ns) = 
+  if ev n
+    then n : filterEven ns
+    else filterEven ns
+
+filterOdd :: ListNat -> ListNat
+filterOdd [] = []
+filterOdd (n : ns) = 
+  if od n
+    then n : filterOdd ns
+    else filterOdd ns
+
+decrease :: ListNat -> ListNat
+decrease [] = []
+decrease (O : ns) = O : decrease ns
+decrease ((S n) : ns) = n : decrease ns
+
+minimum :: ListNat -> Nat
+minimum [] = O
+minimum ns = if anyZero ns
+  then O
+  else S(minimum (decrease ns))
 
 -- mix [1,2,3,4] [100,200,300,400] = [1,100,2,200,3,300,4,400]
 -- intersperse 8 [1,2,3,4] = [1,8,2,8,3,8,4]
