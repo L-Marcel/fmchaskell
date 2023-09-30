@@ -4,12 +4,12 @@
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Use list literal pattern" #-}
 {-# HLINT ignore "Use map" #-}
-{-# HLINT ignore "Use guards" #-}
 
 module Nat where
 
 import Prelude
-  hiding (minimum, (==), drop, take, enumFromTo, not, reverse, (++), product, sum, elem, length, (+), (*), (^), quot, min, gcd, lcm, div, max, pred, rem)
+  hiding (last, (<), (>), (>=), (<=), compare, init, isPrefixOf, maximum, minimum, drop, take, enumFromTo, not, reverse, (++), product, sum, elem, length, (+), (*), (^), quot, min, gcd, lcm, div, max, pred, rem)
+import System.Win32.DebugApi (DebugEventInfo(Exception))
 
 data Nat = O | S Nat
   deriving (Eq, Show)
@@ -26,7 +26,7 @@ m * (S n) = m + (m * n)
 
 -- exponenciação
 (^) :: Nat -> Nat -> Nat
-m ^ O = (S O)
+m ^ O = S O
 m ^ (S n) = m * (m ^ n)
 
 -- dobro
@@ -41,13 +41,13 @@ pred (S m) = m
 
 -- fatorial
 fact :: Nat -> Nat
-fact O = (S O)
-fact (S m) = (S m) * (fact m)
+fact O = S O
+fact (S m) = S m * fact m
 
 -- fibonacci
 fib :: Nat -> Nat
 fib O = O
-fib (S O) = (S O)
+fib (S O) = S O
 fib (S (S m)) = fib (S m) + fib m
 
 -- valor mínimo
@@ -75,7 +75,7 @@ quot m n = quot' m n n
 rem :: Nat -> Nat -> Nat
 rem O n = O
 rem (S m) O = S (rem m O)
-rem m n = rem' m (n * (quot m n))
+rem m n = rem' m (n * quot m n)
   where
     rem' :: Nat -> Nat -> Nat
     rem' (S m) (S n) = rem' m n
@@ -106,11 +106,6 @@ lcm m n = lcm' m n (S O) (pred (max m n))
 
 -- Bool -----------------
 
-(==) :: Nat -> Nat -> Bool
-O == O = True
-(S n) == (S m) = n == m
-_ == _ = False
-
 not :: Bool -> Bool
 not True = False
 not False = True
@@ -127,12 +122,25 @@ isZero :: Nat -> Bool
 isZero O = True
 isZero _ = False
 
--- Inequality -----------------
+-- Inequality ----------
 
-gt :: Nat -> Nat -> Bool
-gt (S n) (S m) = gt n m
-gt O (S m) = False
-gt (S n) O = True
+compare :: Nat -> Nat -> Ordering
+compare O O = EQ
+compare _ O = GT
+compare O _ = LT
+compare (S n) (S m) = compare n m
+
+(<) :: Nat -> Nat -> Bool
+n < m = compare n m == LT
+
+(>) :: Nat -> Nat -> Bool
+n > m = compare n m == GT
+
+(>=) :: Nat -> Nat -> Bool
+n >= m = n > m || n == m 
+
+(<=) :: Nat -> Nat -> Bool
+n <= m = n < m || n == m
 
 -- ListNat --------------
 
@@ -140,7 +148,7 @@ type ListNat = [Nat]
 
 length :: ListNat -> Nat
 length [] = O
-length (n : ns) = S(length ns)
+length (n : ns) = S (length ns)
 
 elem :: Nat -> ListNat -> Bool
 elem _ [] = False
@@ -191,29 +199,28 @@ anyZero (n : ns) = isZero n || anyZero ns
 
 addNat :: Nat -> ListNat -> ListNat
 addNat m [] = []
-addNat m (n : ns) = (m + n) : (addNat m ns)
+addNat m (n : ns) = (m + n) : addNat m ns
 
 mulNat :: Nat -> ListNat -> ListNat
 mulNat m [] = []
-mulNat m (n : ns) = (m * n) : (mulNat m ns)
+mulNat m (n : ns) = (m * n) : mulNat m ns
 
 expNat :: Nat -> ListNat -> ListNat
 expNat m [] = []
-expNat m (n : ns) = (n ^ m) : (expNat m ns)
+expNat m (n : ns) = (n ^ m) : expNat m ns
 
+--fix
 enumFromTo :: Nat -> Nat -> ListNat
-enumFromTo n m = 
-  if n == m
-    then m : []
-    else if gt n m
-      then m : (enumFromTo n (S m))
-      else n : (enumFromTo (S n) m)
+enumFromTo n m
+  | n == m = [m]
+  | n > m = m : enumFromTo n (S m)
+  | otherwise = n : enumFromTo (S n) m
 
 enumTo :: Nat -> ListNat
 enumTo = enumFromTo O
 
 take :: Nat -> ListNat -> ListNat
-take (S m) (n : ns) = n : (take m ns)
+take (S m) (n : ns) = n : take m ns
 take _ _ = []
 
 drop :: Nat -> ListNat -> ListNat
@@ -222,53 +229,85 @@ drop _ ns = ns
 
 elemIndices :: Nat -> ListNat -> ListNat
 elemIndices m n = elemIndices' m n O
-  where 
+  where
     elemIndices' :: Nat -> ListNat -> Nat -> ListNat
     elemIndices' _ [] _ = []
-    elemIndices' m (n : ns) i = 
+    elemIndices' m (n : ns) i =
       if m == n
         then i : elemIndices' m ns (S i)
         else elemIndices' m ns (S i)
 
 pwAdd :: ListNat -> ListNat -> ListNat
 pwAdd (n : ns) (m : ms) = (n + m) : pwAdd ns ms
-pwAdd _ ms = ms
+pwAdd _ _ = []
 
 pwMul :: ListNat -> ListNat -> ListNat
 pwMul (n : ns) (m : ms) = (n * m) : pwMul ns ms
-pwMul _ ms = ms
+pwMul _ _ = []
 
 isSorted :: ListNat -> Bool
-isSorted (n : (m : ms)) = (S n) == m && isSorted (m : ms)
+isSorted (n : (m : ms)) = n <= m && isSorted (m : ms)
 isSorted _ = True
 
 filterEven :: ListNat -> ListNat
 filterEven [] = []
-filterEven (n : ns) = 
+filterEven (n : ns) =
   if ev n
     then n : filterEven ns
     else filterEven ns
 
 filterOdd :: ListNat -> ListNat
 filterOdd [] = []
-filterOdd (n : ns) = 
+filterOdd (n : ns) =
   if od n
     then n : filterOdd ns
     else filterOdd ns
 
+-- bonus
 decrease :: ListNat -> ListNat
 decrease [] = []
 decrease (O : ns) = O : decrease ns
 decrease ((S n) : ns) = n : decrease ns
 
 minimum :: ListNat -> Nat
-minimum [] = O
-minimum ns = if anyZero ns
-  then O
-  else S(minimum (decrease ns))
+minimum [] = error "Empty list has no minimum."
+minimum [n] = n
+minimum (n : ns) = min n (minimum ns)
 
--- mix [1,2,3,4] [100,200,300,400] = [1,100,2,200,3,300,4,400]
--- intersperse 8 [1,2,3,4] = [1,8,2,8,3,8,4]
--- init [1,2,3,4] = [1,2,3]
--- tail [1,2,3,4] = [2,3,4]
--- elemIndices 42 [7,8,35,42,41,42,42] = [3,5,6]
+maximum :: ListNat -> Nat
+maximum [] = error "Empty list has no maximum."
+maximum [n] = n
+maximum (n : ns) = max n (maximum ns)
+
+isPrefixOf :: ListNat -> ListNat -> Bool 
+isPrefixOf [] _ = True
+isPrefixOf (n : ns) (m : ms) = n == m && isPrefixOf ns ms
+isPrefixOf _ _ = False
+
+mix :: ListNat -> ListNat -> ListNat
+mix [] ms = ms
+mix ns [] = ns 
+mix (n : ns) (m : ms) = n : (m : mix ns ms)
+
+intersperse :: Nat -> ListNat -> ListNat
+intersperse n [] = []
+intersperse _ [m] = [m]
+intersperse n (m : ms) = m : (n : intersperse n ms)
+
+head :: ListNat -> Nat
+head [] = error "Empty list has no head."
+head (n : _) = n
+
+tail :: ListNat -> ListNat
+tail [] = error "Empty list has no tail."
+tail (_ : ns) = ns
+
+init :: ListNat -> ListNat
+init [] = error "Empty list has no init."
+init [n] = []
+init (n : ns) = n : init ns
+
+last :: ListNat -> Nat
+last [] = error "Empty list has no last."
+last [n] = n
+last (_ : ns) = last ns
