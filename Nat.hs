@@ -12,7 +12,11 @@ import Prelude
 import System.Win32.DebugApi (DebugEventInfo(Exception))
 
 data Nat = O | S Nat
-  deriving (Eq, Show)
+  deriving (Eq)
+
+instance (Show Nat) where
+  show O = "O"
+  show (S n) = 'S': show n
 
 -- adição
 (+) :: Nat -> Nat -> Nat
@@ -311,3 +315,5 @@ last :: ListNat -> Nat
 last [] = error "Empty list has no last."
 last [n] = n
 last (_ : ns) = last ns
+
+-- Int ------------------
