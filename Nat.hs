@@ -2,7 +2,7 @@ module Nat where
 
 import Prelude
   hiding ((-), last, (<), (>), (>=), (<=), compare, init, isPrefixOf, maximum, minimum, drop, take, enumFromTo, reverse, (++), product, sum, elem, length, (+), (*), (^), quot, min, gcd, lcm, div, max, pred, rem)
-import Data
+import DataTypes
 import Bool
 import Ordering
 
@@ -49,6 +49,7 @@ max (S m) (S n) = S (max m n)
 max O m = m
 max m O = m
 
+-- essa foi presente de Hannah & Thanos
 div :: (Nat, Nat) -> (Nat, Nat)
 div (a, b)
   | a < b     = (O, a)
@@ -75,22 +76,23 @@ rem m n = snd (div (m, n))
 --    rem' (S m) (S n) = rem' m n
 --    rem' m O = m
 
-
 -- máximo divisor comum -- fix
-gcd :: Nat -> Nat -> Nat
-gcd m n = gcd' m n (S O) (S (min m n))
-  where
-    gcd' :: Nat -> Nat -> Nat -> Nat -> Nat
-    gcd' m n p (S O) = S O
-    gcd' m n O q = q
-    gcd' m n p (S q) = gcd' m n (max (rem m q) (rem n q)) q
+-- era para ser o de euclides
+-- gcd :: Nat -> Nat -> Nat
+-- gcd m n = gcd' m n (S O) (S (min m n))
+--  where
+--    gcd' :: Nat -> Nat -> Nat -> Nat -> Nat
+--    gcd' m n p (S O) = S O
+--    gcd' m n O q = q
+--    gcd' m n p (S q) = gcd' m n (max (rem m q) (rem n q)) q
 
 -- mínimo multiplo comum -- fix
-lcm :: Nat -> Nat -> Nat
-lcm m n = lcm' m n (S O) (pred (max m n))
-  where
-    lcm' :: Nat -> Nat -> Nat -> Nat -> Nat
-    lcm' m n O q = q
-    lcm' O n p q = O
-    lcm' m O p q = O
-    lcm' m n p q = lcm' m n (max (rem (S q) m) (rem (S q) n)) (S q)
+-- era para ser o de euclides
+-- lcm :: Nat -> Nat -> Nat
+-- lcm m n = lcm' m n (S O) (pred (max m n))
+--  where
+--    lcm' :: Nat -> Nat -> Nat -> Nat -> Nat
+--    lcm' m n O q = q
+--    lcm' O n p q = O
+--    lcm' m O p q = O
+--    lcm' m n p q = lcm' m n (max (rem (S q) m) (rem (S q) n)) (S q)

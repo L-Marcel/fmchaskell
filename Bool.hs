@@ -1,7 +1,7 @@
 module Bool where
 
 import Prelude hiding (not)
-import Data
+import DataTypes
 
 not :: Bool -> Bool
 not True = False

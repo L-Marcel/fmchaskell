@@ -1,8 +1,7 @@
 module Ordering where
 
 import Prelude hiding ((<), (>), compare)
-import Data
-
+import DataTypes
 
 compare :: Nat -> Nat -> Ordering
 compare O O = EQ
