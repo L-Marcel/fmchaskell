@@ -91,7 +91,7 @@ take (S m) (n : ns) = n : take m ns
 take _ _ = []
 
 drop :: Nat -> ListNat -> ListNat
-drop (S m) (n : ns) = drop m ns
+drop (S m) (_ : ns) = drop m ns
 drop _ ns = ns
 
 elemIndices :: Nat -> ListNat -> ListNat
@@ -177,3 +177,24 @@ last :: ListNat -> Nat
 last [] = error "Empty list has no last."
 last [n] = n
 last (_ : ns) = last ns
+
+remove :: Nat -> ListNat -> ListNat
+remove n [] = []
+remove n (m : ms)
+  | n == m = ms
+  | otherwise = m : (remove n ms)
+
+removeAll :: Nat -> ListNat -> ListNat
+removeAll n [] = []
+removeAll n (m : ms)
+  | n == m = removeAll n ms
+  | otherwise = m : (removeAll n ms)
+
+sort :: ListNat -> ListNat
+sort [] = []
+sort [n] = [n]
+sort ns = (minimum ns) : sort (remove (minimum ns) ns)
+
+filterUnique :: ListNat -> ListNat
+filterUnique [] = []
+filterUnique (n : ns) = n : filterUnique (removeAll n ns)

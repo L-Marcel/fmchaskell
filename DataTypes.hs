@@ -21,3 +21,6 @@ type ListNat = [Nat]
 --  fromList (n : ns) = Cons n (fromList ns)
 --  toList Empty = []
 --  toList (Cons n ns) = n : toList ns
+
+-- data List a = Empty | Const a (List a)
+--  deriving (Eq, Show)
