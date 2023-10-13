@@ -22,5 +22,5 @@ type ListNat = [Nat]
 --  toList Empty = []
 --  toList (Cons n ns) = n : toList ns
 
--- data List a = Empty | Const a (List a)
+-- data List a = Empty | Cons a (List a)
 --  deriving (Eq, Show)

@@ -1,7 +1,7 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
+{-# LANGUAGE GADTs, OverloadedLists, TypeFamilies #-}
 {-# HLINT ignore "Use foldr" #-}
 {-# HLINT ignore "Use map" #-}
-{-# LANGUAGE GADTs, OverloadedLists, TypeFamilies #-}
 
 module ListNat where
 
@@ -145,14 +145,14 @@ maximum [] = error "Empty list has no maximum."
 maximum [n] = n
 maximum (n : ns) = max n (maximum ns)
 
-isPrefixOf :: ListNat -> ListNat -> Bool 
+isPrefixOf :: ListNat -> ListNat -> Bool
 isPrefixOf [] _ = True
 isPrefixOf (n : ns) (m : ms) = n == m && isPrefixOf ns ms
 isPrefixOf _ _ = False
 
 mix :: ListNat -> ListNat -> ListNat
 mix [] ms = ms
-mix ns [] = ns 
+mix ns [] = ns
 mix (n : ns) (m : ms) = n : (m : mix ns ms)
 
 intersperse :: Nat -> ListNat -> ListNat
@@ -182,18 +182,18 @@ remove :: Nat -> ListNat -> ListNat
 remove n [] = []
 remove n (m : ms)
   | n == m = ms
-  | otherwise = m : (remove n ms)
+  | otherwise = m : remove n ms
 
 removeAll :: Nat -> ListNat -> ListNat
 removeAll n [] = []
 removeAll n (m : ms)
   | n == m = removeAll n ms
-  | otherwise = m : (removeAll n ms)
+  | otherwise = m : removeAll n ms
 
 sort :: ListNat -> ListNat
 sort [] = []
 sort [n] = [n]
-sort ns = (minimum ns) : sort (remove (minimum ns) ns)
+sort ns = minimum ns : sort (remove (minimum ns) ns)
 
 filterUnique :: ListNat -> ListNat
 filterUnique [] = []
