@@ -4,7 +4,7 @@
 {-# HLINT ignore "Use foldr" #-}
 
 module List where
-import Prelude hiding (dropWhile, takeWhile, (^), (*), (+), reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
+import Prelude hiding (zip, dropWhile, takeWhile, (^), (*), (+), reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
 
 import DataTypes
 import Nat
@@ -43,6 +43,9 @@ any f xs = fold (||) False (map f xs)
 pw :: (a -> b -> c) -> [a]-> [b] -> [c]
 pw f (x : xs) (y : ys) = f x y : pw f xs ys
 pw _ _ _ = []
+
+zip :: [a] -> [b] -> [(a, b)]
+zip = pw (,)
 
 append :: a -> [a] -> [a]
 append x [] = [x]
