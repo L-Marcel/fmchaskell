@@ -1,12 +1,14 @@
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use map" #-}
 {-# HLINT ignore "Eta reduce" #-}
+{-# HLINT ignore "Use foldr" #-}
 
 module List where
-import Prelude hiding (dropWhile, takeWhile, (*), (+), reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
+import Prelude hiding (dropWhile, takeWhile, (^), (*), (+), reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
 
 import DataTypes
 import Nat
+import ListNat hiding (expNat, mulNat, reverse, append)
 import Bool
 import Ordering
 
@@ -24,30 +26,31 @@ filter f (x : xs)
   | f x = x : filter f xs
   | otherwise = filter f xs
 
-all :: (a -> Bool) -> [a] -> Bool
-all _ [] = True
-all f (x : xs) = f x && all f xs
-
-any :: (a -> Bool) -> [a] -> Bool
-any _ [] = False
-any f (x : xs) = f x || any f xs
-
-pw :: (a -> a -> a) -> [a] -> [a] -> [a]
-pw f (x : xs) (y : ys) = f x y : pw f xs ys
-pw _ _ _ = []
-
 fold :: (a -> a -> a) -> a -> [a] -> a
 fold _ x [] = x
 fold f x (y : ys) = f y (fold f x ys)
 
--- append :: a -> [a] -> [a]
--- append x ys = fold (:) [x] ys
--- append x [] = [x]
--- append x (y : ys) = y : (append x ys)
+all :: (a -> Bool) -> [a] -> Bool
+all f xs = fold (&&) True (map f xs)
+-- all _ [] = True
+-- all f (x : xs) = f x && all f xs
 
--- reverse :: [a] -> [a]
--- reverse [] = []
--- reverse (x : xs) = reverse xs : [x]
+any :: (a -> Bool) -> [a] -> Bool
+any f xs = fold (||) False (map f xs)
+-- any _ [] = False
+-- any f (x : xs) = f x || any f xs
+
+pw :: (a -> b -> c) -> [a]-> [b] -> [c]
+pw f (x : xs) (y : ys) = f x y : pw f xs ys
+pw _ _ _ = []
+
+append :: a -> [a] -> [a]
+append x [] = [x]
+append x (y : ys) = y : append x ys
+
+reverse :: [a] -> [a]
+reverse [] = []
+reverse (x : xs) = append x (reverse xs)
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile _ [] = []
@@ -60,3 +63,12 @@ dropWhile _ [] = []
 dropWhile f (x : xs)
   | f x = dropWhile f xs
   | otherwise = x : xs
+
+addNat :: Nat -> [Nat] -> [Nat]
+addNat m = map (m +)
+
+mulNat :: Nat -> [Nat] -> [Nat]
+mulNat m = map (m *)
+
+expNat :: Nat -> [Nat] -> [Nat]
+expNat m = map (^ m)
