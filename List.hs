@@ -1,16 +1,21 @@
+{-# LANGUAGE GADTs, OverloadedLists, TypeFamilies #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 {-# HLINT ignore "Use map" #-}
 {-# HLINT ignore "Eta reduce" #-}
 {-# HLINT ignore "Use foldr" #-}
+{-# HLINT ignore "Use concatMap" #-}
 
 module List where
-import Prelude hiding (zip, dropWhile, takeWhile, (^), (*), (+), reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
+import Prelude hiding (Right, Left, (++), concat, zip, dropWhile, takeWhile, reverse, fold, map, (<=), (>=), compare, replicate, filter, all, any)
 
 import DataTypes
-import Nat
-import ListNat hiding (expNat, mulNat, reverse, append)
+import ListNat hiding ((++), expNat, mulNat, reverse, append)
 import Bool
 import Ordering
+
+(++) :: [a] -> [a] -> [a]
+[] ++ xs = xs
+(y : ys) ++ xs = y : (ys ++ xs)
 
 map :: (a -> b) -> [a] -> [b]
 map f [] = []
@@ -67,11 +72,32 @@ dropWhile f (x : xs)
   | f x = dropWhile f xs
   | otherwise = x : xs
 
-addNat :: Nat -> [Nat] -> [Nat]
-addNat m = map (m +)
+-- addNat :: Nat -> [Nat] -> [Nat]
+-- addNat m = map (m +)
 
-mulNat :: Nat -> [Nat] -> [Nat]
-mulNat m = map (m *)
+-- mulNat :: Nat -> [Nat] -> [Nat]
+-- mulNat m = map (m *)
 
-expNat :: Nat -> [Nat] -> [Nat]
-expNat m = map (^ m)
+-- expNat :: Nat -> [Nat] -> [Nat]
+-- expNat m = map (^ m)
+
+concat :: [[a]] -> [a]
+concat [] = []
+concat ([] : xss) = concat xss
+concat ((x : xs) : xss) = x : concat (xs : xss)
+
+type ShowAt = Int
+data InfinitySetOrientation = Left Int | Center | Right Int;
+data Set where
+  FiniteSet :: [Int] -> Set
+  InfinitySet :: (Int -> Int) -> InfinitySetOrientation -> ShowAt -> Set
+
+instance (Show Set) where
+  show (FiniteSet is) = show is
+  show (InfinitySet f Center 0) = "[...]" 
+  show (InfinitySet f Center at) 
+    = "[..., " ++ concat (map ((++ ", ").show.f) [-at+1 .. at-1]) ++ "...]"
+  show (InfinitySet f (Right s) at)
+    = "[" ++ concat (map ((++ ", ").show.f) [s .. s+at-1]) ++ "...]"
+  show (InfinitySet f (Left s) at)
+    = "[..." ++ concat (map ((", " ++).show.f) [s-at+1 .. s]) ++ "]"

@@ -1,7 +1,8 @@
--- {-# LANGUAGE GADTs, OverloadedLists, TypeFamilies #-}
+{-# LANGUAGE GADTs, TypeFamilies #-}
 
 module DataTypes where
 import GHC.Exts (IsList(..))
+import Prelude hiding (Maybe, Nothing, Just)
 
 data Nat = O | S Nat
   deriving (Eq)
@@ -24,3 +25,21 @@ type ListNat = [Nat]
 
 -- data List a = Empty | Cons a (List a)
 --  deriving (Eq, Show)
+
+data OneOf a b = First a | Second b;
+data Maybe a = Nothing | Just a;
+
+instance (Show a, Show b) => (Show (OneOf a b)) where
+  show (First a) = show a
+  show (Second b) = show b
+
+instance (Show a) => (Show (Maybe a)) where
+  show Nothing = "Nothing"
+  show (Just a) = show a
+
+data Module where
+  Mod :: Int -> Module
+  deriving Eq
+
+instance (Show Module) where
+  show (Mod a) = "mod " ++ show a

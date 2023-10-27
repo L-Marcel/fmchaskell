@@ -1,6 +1,8 @@
 module Int where
-import Prelude hiding (gcd, abs, div, rem, quot)
+import Prelude hiding (Just, Nothing, Maybe, mod, gcd, abs, div, rem, quot)
+import DataTypes
 import Bool
+import List
 
 abs :: Int -> Int
 abs a
@@ -40,3 +42,29 @@ eucgcd' n a b =
 
 eucgcd :: Int -> Int -> (Int, Int, Int)
 eucgcd = eucgcd' 0
+
+-- x ≡ₘ b
+mod :: Int -> Module -> Set
+mod b (Mod 0) = FiniteSet [b]
+mod b (Mod m) = InfinitySet f' Center 4
+  where 
+    f' x = m * x + b
+
+-- ax ≡ₘ 1
+-- ax ≡ₘ mod 1 m
+-- inverse :: Int -> Int -> Maybe Int
+-- inverse 0 _ = Nothing
+-- inverse _ 0 = Nothing
+-- inverse a m
+--   | rem (mod 1 m) a == 0 = Just (quot (mod 1 m) a)
+--   | otherwise = Nothing
+
+-- -- ax ≡ₘ b
+-- -- ax ≡ₘ mod b m
+-- altInverse :: Int -> Int -> Int -> Maybe Int
+-- altInverse _ 0 _ = Just 0
+-- altInverse _ _ 0 = Nothing
+-- altInverse 0 _ _ = Nothing
+-- altInverse a b m
+--   | rem (mod b m) a == 0 = Just (quot (mod b m) a)
+--   | otherwise = Nothing
