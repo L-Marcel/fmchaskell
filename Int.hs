@@ -46,19 +46,22 @@ eucgcd = eucgcd' 0
 -- x ≡ₘ b
 mod :: Int -> Module -> Set
 mod b (Mod 0) = FiniteSet [b]
-mod b (Mod m) = InfinitySet f' Center 4
+mod b (Mod m) = InfiniteSet f' ISCenter 4
   where 
     f' x = m * x + b
 
--- ax ≡ₘ 1
--- ax ≡ₘ mod 1 m
--- inverse :: Int -> Int -> Maybe Int
--- inverse 0 _ = Nothing
--- inverse _ 0 = Nothing
--- inverse a m
---   | rem (mod 1 m) a == 0 = Just (quot (mod 1 m) a)
---   | otherwise = Nothing
+coprime :: Int -> Int -> Bool
+a `coprime` b = 
+  let (m', _, _) = eucgcd a b 
+    in m' == 1 
 
+inverse :: Int -> Module -> Maybe Int
+inverse a (Mod m)
+  | a `coprime` m =
+    let (_, _, a') = eucgcd' 0 m a
+      in Just a'
+  | otherwise = Nothing
+      
 -- -- ax ≡ₘ b
 -- -- ax ≡ₘ mod b m
 -- altInverse :: Int -> Int -> Int -> Maybe Int

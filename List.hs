@@ -87,17 +87,17 @@ concat ([] : xss) = concat xss
 concat ((x : xs) : xss) = x : concat (xs : xss)
 
 type ShowAt = Int
-data InfinitySetOrientation = Left Int | Center | Right Int;
+data InfiniteSetOrientation = ISLeft Int | ISCenter | ISRight Int;
 data Set where
   FiniteSet :: [Int] -> Set
-  InfinitySet :: (Int -> Int) -> InfinitySetOrientation -> ShowAt -> Set
+  InfiniteSet :: (Int -> Int) -> InfiniteSetOrientation -> ShowAt -> Set
 
 instance (Show Set) where
   show (FiniteSet is) = show is
-  show (InfinitySet f Center 0) = "[...]" 
-  show (InfinitySet f Center at) 
+  show (InfiniteSet f ISCenter 0) = "[...]" 
+  show (InfiniteSet f ISCenter at) 
     = "[..., " ++ concat (map ((++ ", ").show.f) [-at+1 .. at-1]) ++ "...]"
-  show (InfinitySet f (Right s) at)
+  show (InfiniteSet f (ISRight s) at)
     = "[" ++ concat (map ((++ ", ").show.f) [s .. s+at-1]) ++ "...]"
-  show (InfinitySet f (Left s) at)
+  show (InfiniteSet f (ISLeft s) at)
     = "[..." ++ concat (map ((", " ++).show.f) [s-at+1 .. s]) ++ "]"
